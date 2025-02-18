@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Navigation from "./components/Navigation";
+import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+
+const ProtectedRoute = ({ children }) => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+        return <Navigate to="/login" replace />;
+    }
+    return children;
+};
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <AuthProvider>
+            <Router>
+                <Navigation />
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route 
+                        path="/" 
+                        element={
+                            <ProtectedRoute>
+                                <Home />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/dashboard" 
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        } 
+                    />
+                </Routes>
+            </Router>
+        </AuthProvider>
+    );
 }
 
 export default App;
