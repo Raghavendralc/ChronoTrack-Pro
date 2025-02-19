@@ -1,52 +1,58 @@
 import { useState, useEffect } from 'react';
-import { 
-    Container, Paper, Typography, Grid, Box, Card, 
-    CardContent, CircularProgress 
+import {
+    Container, Paper, Typography, Grid, Box, Card,
+    CardContent, CircularProgress
 } from '@mui/material';
-import { 
+import {
     LineChart, Line, BarChart, Bar,
-    XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-    ResponsiveContainer 
+    XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+    ResponsiveContainer
 } from 'recharts';
 import { useSpring, animated } from '@react-spring/web';
 
 const Dashboard = () => {
     const [loading, setLoading] = useState(true);
-    const [userData, setUserData] = useState(null);
     const [currentTime, setCurrentTime] = useState('');
     const [counterHistory, setCounterHistory] = useState([]);
     const [editorContent, setEditorContent] = useState('');
 
-    // Animation for dashboard elements
+    // Animation config
     const fadeIn = useSpring({
         from: { opacity: 0, transform: 'translateY(20px)' },
         to: { opacity: 1, transform: 'translateY(0)' },
         config: { tension: 280, friction: 20 }
     });
 
-    // Get current UTC time in required format
+    // Get current UTC time
     const getCurrentUTCTime = () => {
         const now = new Date();
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(now.getUTCDate()).padStart(2, '0');
-        const hours = String(now.getUTCHours()).padStart(2, '0');
-        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-        const seconds = String(now.getUTCSeconds()).padStart(2, '0');
-        
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        return now.toISOString()
+            .replace('T', ' ')
+            .split('.')[0];
     };
 
-    // Load data and start timer
+    // Calculate content statistics
+    const calculateContentStats = (content) => {
+        // Get content from localStorage if not provided
+        const textContent = content || localStorage.getItem('editorContent') || '';
+
+        // Remove HTML tags and decode HTML entities
+        const div = document.createElement('div');
+        div.innerHTML = textContent;
+        const plainText = div.textContent || div.innerText || '';
+
+        return {
+            characters: plainText.length,
+            words: plainText.trim().split(/\s+/).filter(word => word.length > 0).length,
+            lines: (plainText.match(/\n/g) || []).length + 1,
+            paragraphs: plainText.split(/\n\s*\n/).filter(para => para.trim().length > 0).length
+        };
+    };
+
+    // Load data from localStorage
     useEffect(() => {
         const loadData = () => {
             try {
-                // Load user data
-                const savedUserData = localStorage.getItem('userData');
-                if (savedUserData) {
-                    setUserData(JSON.parse(savedUserData));
-                }
-
                 // Load counter history
                 const savedHistory = localStorage.getItem('counterHistory');
                 if (savedHistory) {
@@ -76,19 +82,36 @@ const Dashboard = () => {
         // Initial time set
         setCurrentTime(getCurrentUTCTime());
 
+        // Cleanup timer
+        return () => clearInterval(timer);
+    }, []);
+
+    // Set up content stats update
+    useEffect(() => {
+        const handleStorageChange = (e) => {
+            if (e.key === 'editorContent') {
+                setEditorContent(e.newValue || '');
+            }
+        };
+
+        // Listen for storage changes
+        window.addEventListener('storage', handleStorageChange);
+
+        // Initial load
+        const savedContent = localStorage.getItem('editorContent');
+        if (savedContent) {
+            setEditorContent(savedContent);
+        }
+
+        // Cleanup
         return () => {
-            clearInterval(timer);
+            window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
 
-    // Calculate content statistics
-    const contentStats = {
-        characters: editorContent.length,
-        words: editorContent.trim().split(/\s+/).filter(Boolean).length,
-        lines: editorContent.split('\n').length,
-        paragraphs: editorContent.split('\n\n').filter(Boolean).length
-    };
+    const contentStats = calculateContentStats(editorContent);
 
+    // Loading state
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
@@ -96,6 +119,19 @@ const Dashboard = () => {
             </Box>
         );
     }
+
+    const formatChartData = (history) => {
+        return history.map(item => ({
+            ...item,
+            // Format the timestamp to show only time HH:MM:SS
+            displayTime: new Date(item.timestamp).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            })
+        }));
+    };
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -107,7 +143,7 @@ const Dashboard = () => {
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <Typography variant="body1" sx={{ 
+                            <Typography variant="body1" sx={{
                                 mb: 1,
                                 fontFamily: 'monospace',
                                 fontSize: '1.1rem',
@@ -117,7 +153,7 @@ const Dashboard = () => {
                                 {currentTime}
                             </Typography>
                             <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                <strong>Current User's Login:</strong> TeAcHaCk
+                                <strong>Current User's Login:</strong> User
                             </Typography>
                         </Grid>
                     </Grid>
@@ -125,31 +161,7 @@ const Dashboard = () => {
 
                 {/* Statistics Cards */}
                 <Grid container spacing={3} sx={{ mb: 3 }}>
-                    <Grid item xs={12} md={4}>
-                        <Card>
-                            <CardContent>
-                                <Typography color="textSecondary" gutterBottom>
-                                    Counter Actions
-                                </Typography>
-                                <Typography variant="h4">
-                                    {counterHistory.length}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Card>
-                            <CardContent>
-                                <Typography color="textSecondary" gutterBottom>
-                                    Total Words
-                                </Typography>
-                                <Typography variant="h4">
-                                    {contentStats.words}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                         <Card>
                             <CardContent>
                                 <Typography color="textSecondary" gutterBottom>
@@ -157,6 +169,42 @@ const Dashboard = () => {
                                 </Typography>
                                 <Typography variant="h4">
                                     {contentStats.characters}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <Card>
+                            <CardContent>
+                                <Typography color="textSecondary" gutterBottom>
+                                    Words
+                                </Typography>
+                                <Typography variant="h4">
+                                    {contentStats.words}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <Card>
+                            <CardContent>
+                                <Typography color="textSecondary" gutterBottom>
+                                    Lines
+                                </Typography>
+                                <Typography variant="h4">
+                                    {contentStats.lines}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <Card>
+                            <CardContent>
+                                <Typography color="textSecondary" gutterBottom>
+                                    Counter Actions
+                                </Typography>
+                                <Typography variant="h4">
+                                    {counterHistory.length}
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -171,32 +219,52 @@ const Dashboard = () => {
                     <Box sx={{ height: 300 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart
-                                data={counterHistory}
-                                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                data={formatChartData(counterHistory)}
+                                margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis 
-                                    dataKey="formattedTime" 
-                                    label={{ value: 'Time', position: 'bottom' }}
+                                <XAxis
+                                    dataKey="displayTime"
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={60}
+                                    tick={{ fontSize: 12 }}
+                                    label={{
+                                        value: 'Time (HH:MM:SS)',
+                                        position: 'bottom',
+                                        offset: 8
+                                    }}
                                 />
-                                <YAxis 
-                                    label={{ value: 'Counter Value', angle: -90, position: 'insideLeft' }}
+                                <YAxis
+                                    label={{
+                                        value: 'Counter Value',
+                                        angle: -90,
+                                        position: 'insideLeft',
+                                        offset: -5
+                                    }}
                                 />
-                                <Tooltip />
-                                <Legend />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="count" 
-                                    stroke="#8884d8" 
+                                <Tooltip
+                                    formatter={(value, name) => [value, 'Counter Value']}
+                                    labelFormatter={(label) => `Time: ${label}`}
+                                />
+                                <Legend
+                                    verticalAlign="top"
+                                    height={36}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="count"
+                                    stroke="#8884d8"
                                     name="Counter Value"
-                                    dot={{ r: 4 }}
+                                    dot={{ r: 3 }}
+                                    activeDot={{ r: 5 }}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
                     </Box>
                 </Paper>
 
-                {/* Content Statistics */}
+                {/* Content Statistics Chart */}
                 <Paper elevation={3} sx={{ p: 3 }}>
                     <Typography variant="h6" gutterBottom>
                         Content Statistics

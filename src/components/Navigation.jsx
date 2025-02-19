@@ -15,7 +15,7 @@ const Navigation = () => {
         <AppBar position="static" sx={{ mb: 3 }}>
             <Toolbar>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    ChronoTrack Pro
+                    React Assessment
                 </Typography>
                 {user ? (
                     <>
@@ -27,7 +27,7 @@ const Navigation = () => {
                         </Button>
                         <Box sx={{ ml: 2 }}>
                             <Typography variant="subtitle2" component="span">
-                                TeAcHaCk
+                                ReactUser
                             </Typography>
                             <Button color="inherit" onClick={handleLogout} sx={{ ml: 2 }}>
                                 Logout

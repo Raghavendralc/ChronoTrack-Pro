@@ -1,47 +1,36 @@
-import { useState, useEffect } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-
-const modules = {
-    toolbar: [
-        [{ 'header': [1, 2, false] }],
-        ['bold', 'italic', 'underline'],
-        [{'list': 'ordered'}, {'list': 'bullet'}],
-        ['clean']
-    ],
-};
-
-const formats = [
-    'header',
-    'bold', 'italic', 'underline',
-    'list', 'bullet'
-];
+import { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Box, Paper } from '@mui/material';
 
 const RichTextEditor = () => {
-    const [content, setContent] = useState(
-        localStorage.getItem("editorData") || ""
-    );
+    const [content, setContent] = useState('');
 
-    // Auto-save content to localStorage
     useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            localStorage.setItem("editorData", content);
-        }, 1000);
+        // Load saved content
+        const savedContent = localStorage.getItem('editorContent');
+        if (savedContent) {
+            setContent(savedContent);
+        }
+    }, []);
 
-        return () => clearTimeout(timeoutId);
-    }, [content]);
+    const handleChange = (value) => {
+        setContent(value);
+        // Save to localStorage
+        localStorage.setItem('editorContent', value);
+    };
 
     return (
-        <div style={{ marginTop: "20px",marginBottom: "30px" }}>
-            <ReactQuill 
-                theme="snow"
-                value={content} 
-                onChange={setContent}
-                modules={modules}
-                formats={formats}
-                style={{ height: "200px" }}
-            />
-        </div>
+        <Paper elevation={3} sx={{ p: 2 }}>
+            <Box sx={{ minHeight: '200px' }}>
+                <ReactQuill
+                    theme="snow"
+                    value={content}
+                    onChange={handleChange}
+                    style={{ height: '150px' }}
+                />
+            </Box>
+        </Paper>
     );
 };
 
