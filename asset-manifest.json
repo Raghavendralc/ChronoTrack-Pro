@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ChronoTrack-Pro/static/css/main.ac086ca9.css",
+    "main.js": "/ChronoTrack-Pro/static/js/main.b71c3907.js",
+    "static/js/453.25fad336.chunk.js": "/ChronoTrack-Pro/static/js/453.25fad336.chunk.js",
+    "index.html": "/ChronoTrack-Pro/index.html",
+    "main.ac086ca9.css.map": "/ChronoTrack-Pro/static/css/main.ac086ca9.css.map",
+    "main.b71c3907.js.map": "/ChronoTrack-Pro/static/js/main.b71c3907.js.map",
+    "453.25fad336.chunk.js.map": "/ChronoTrack-Pro/static/js/453.25fad336.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ac086ca9.css",
+    "static/js/main.b71c3907.js"
+  ]
+}
