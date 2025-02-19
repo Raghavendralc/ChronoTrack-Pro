@@ -2,7 +2,7 @@
   "name": "chronotrack-pro",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://Raghavendralc.github.io/ChronoTrack-Pro",
+  "homepage": "https://raghavendralc.github.io/Chronotrack-pro",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
