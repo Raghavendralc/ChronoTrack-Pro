@@ -1,9 +1,15 @@
-# 🚀 React Assessment Project
+# 🌟 ChronoTrack Pro
 
-A responsive React application featuring user authentication, interactive components, and real-time data visualization. 
+A responsive React dashboard featuring real-time UTC synchronization, interactive components, and dynamic data visualization.
 
 ## 🌐 Live Demo
-[View Live Demo](https://Raghavendralc.github.io/React-Assignment)
+[View Live Demo](https://raghavendralc.github.io/Chronotrack-pro)
+
+### ⚡ Current Session Example
+```bash
+Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): 2025-02-19 06:11:12
+Current User's Login: TeAcHaCk
+```
 
 ## ⭐ Key Features
 
@@ -39,10 +45,6 @@ A responsive React application featuring user authentication, interactive compon
 - Profile information management
 
 ### 📊 Dashboard
-```
-Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): 2025-02-19 05:21:24
-Current User's Login: TeAcHaCk
-```
 - Real-time UTC clock display
 - User activity visualization
 - Data statistics and charts
@@ -63,12 +65,12 @@ Current User's Login: TeAcHaCk
 
 1. Clone the repository
 ```bash
-git clone https://github.com/Raghavendralc/React-Assignment.git
+git clone https://github.com/Raghavendralc/Chronotrack-pro.git
 ```
 
 2. Install dependencies
 ```bash
-cd React-Assignment
+cd Chronotrack-pro
 npm install
 ```
 
@@ -116,7 +118,7 @@ npm run deploy
 
 ## 📁 Project Structure
 ```
-React-Assignment/
+Chronotrack-pro/
 ├── src/
 │   ├── components/
 │   │   ├── Counter.js
@@ -168,5 +170,5 @@ Raghavendra LC - [GitHub Profile](https://github.com/Raghavendralc)
 
 ---
 ### 🔍 Quick Links
-- [Report Bug](https://github.com/Raghavendralc/React-Assignment/issues)
-- [Request Feature](https://github.com/Raghavendralc/React-Assignment/issues)
+- [Report Bug](https://github.com/Raghavendralc/Chronotrack-pro/issues)
+- [Request Feature](https://github.com/Raghavendralc/Chronotrack-pro/issues)
